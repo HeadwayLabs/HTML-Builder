@@ -1,0 +1,27 @@
+div.sub-tabs-content .repeater .repeater-group {
+	width: 92%;
+
+}
+
+div.sub-tabs-content .repeater .repeater-group div.input-heading h3 {
+	float: left;
+	width: 148px;
+	border-right: 3px solid #5F5F5F;
+	margin: 8px 11px 15px 0;
+	padding: 3px;
+	border-bottom: none;
+	text-transform: capitalize;
+	text-transform: capitalize;
+	font-weight: bold;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+div.sub-tabs-content .repeater .repeater-group div.input-heading h3 span {
+	font-size: 9px;
+	font-weight: normal;
+	color: #777;
+	display: block;
+	margin: 9px 0 0;
+}

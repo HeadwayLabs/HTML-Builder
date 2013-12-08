@@ -104,7 +104,13 @@ var draggableCallback = function(block, args) {
 
 							dataHandleInput(thisInput, newPosition);
 							
-		     			}, 700);
+		     			}, 1000);
+
+		     			var thisCentered = args.input.parents('.sub-tabs-content-container').find('#sub-tab-' + elementGroup + '-tab-content .repeater-group').eq(index).find('#input-' + blockID + '-center-element');
+
+		     			thisCentered.parents('.input-checkbox').find('.checkbox-checked').removeClass()
+
+		     			
 			  			
 			  		})
 
@@ -125,8 +131,12 @@ var draggableCallback = function(block, args) {
 			//gets each groups options and then applies draggable to them
 			$.each(elementGroups, function(index, settings) {
 
-				var element = $i('.' + elementType + '.element' + index);
-				envokeDraggable(index, element, elementGroups)
+
+				if (settings['position-type'] == 'draggable') {
+					var element = $i('.' + elementType + '.element' + index);
+					envokeDraggable(index, element, elementGroups)
+				};
+				
 			
 			});
 
@@ -135,3 +145,72 @@ var draggableCallback = function(block, args) {
 	}, 1000);
 
 }
+
+var centerCallback = function(block, args) {                
+
+	setTimeout(function(){
+
+		var blockID = block.id;
+		
+		var centerElement = function(index, element, elementGroups) {
+
+			var elWidth = element.width();
+
+			var elWidth = $(element).width();
+					
+			var blockWidth = element.parents('.block').width();
+
+			var elementGroup = $(element).data('element-type');
+
+			var position = "left";
+
+			var newPosition = (blockWidth / 2) - (elWidth / 2);// finds the center
+
+			var newPosPercentage = (newPosition / (blockWidth)) * 100;
+
+			elementGroups[index][position] = newPosPercentage;
+						
+			var thisInput = args.input.parents('.sub-tabs-content-container').find('#sub-tab-' + elementGroup + '-tab-content .repeater-group').eq(index).find('#input-' + blockID + '-' +position);
+
+			thisInput.val(newPosPercentage);
+
+			setTimeout(function(){
+
+				dataHandleInput(thisInput, newPosPercentage);
+				
+ 			}, 600);
+
+ 			setTimeout(function(){
+
+				save(); 
+				
+ 			}, 900);
+			
+
+		}
+
+
+		/*
+			Go through each element and each group and envoke draggable
+		*/
+		$.each(block.settings, function(elementType, elementGroups) {
+
+			//console.log(elementGroups)//repeater groups each as object, eg: text, images
+
+			//gets each groups options and then applies draggable to them
+			$.each(elementGroups, function(index, settings) {
+
+				if (settings['position-type'] == 'draggable') {
+					var element = $i('.' + elementType + '.element' + index);
+					centerElement(index, element, elementGroups)
+				};
+				
+			
+			});
+
+		});
+
+	}, 1000);
+
+}
+

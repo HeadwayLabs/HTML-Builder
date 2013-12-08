@@ -87,10 +87,15 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 			'heading-elements' => array(
 				'type' => 'repeater',
 				'name' => 'heading-elements',
-				'label' => 'Heading Elements',
+				//'label' => 'Heading Elements',
 				'inputs' => array(
 					array(
-						'type' => 'text',
+						'name' => 'heading-id-heading',
+						'type' => 'heading',
+						'label' => 'Heading & Markup <span>Set text and the html output</span>'
+					),
+					array(
+						'type' => 'textarea',
 						'name' => 'heading',
 						'label' => 'Heading Text',
 						'default' => null
@@ -98,7 +103,7 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 					array(
 						'type' => 'select',
 						'name' => 'heading-html-element',
-						'label' => 'HTML Element',
+						'label' => 'Markup',
 						'options' => array(
 							'h1' => 'H1',
 							'h2' => 'H2',
@@ -108,18 +113,86 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						)
 					),
 					array(
+						'name' => 'position-id-heading',
+						'type' => 'heading',
+						'label' => 'Positioning <span>Set text and the html output</span>'
+					),
+					array(
+						'name' => 'position-type',
+						'label' => 'Position using',
+						'type' => 'select',
+						'default' => 'draggable',
+						'options' => array(
+							'draggable' => 'Drag',
+							'preset' => 'Preset'
+						),
+						'toggle' => array(
+							'draggable' => array(
+								'hide' => array(
+									'#input-preset-position'
+								)
+							),
+							'preset' => array(
+								'show' => array(
+									'#input-preset-position'
+								)
+							)
+						),
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'preset-position',
+						'label' => 'Position',
+						'type' => 'select',
+						'default' => 'none',
+						'options' => array(
+							'' => 'None',
+							'top_left' => 'Top Left',
+							'top_center' => 'Top Center',
+							'top_right' => 'Top Right',
+							'center_left' => 'Center Left',
+							'center_center' => 'Center Center',
+							'center_right' => 'Center Right',
+							'bottom_left' => 'Bottom Left',
+							'bottom_center' => 'Bottom Center',
+							'bottom_right' => 'Bottom Right'
+						)
+					),
+					array(
+						'name' => 'center-element',
+						'label' => 'Center on x axis?',
+						'type' => 'checkbox',
+						'default' => false,
+						'callback' => 'centerCallback(block, args)'
+					),
+					array(
+						'name' => 'custom-id-heading',
+						'type' => 'heading',
+						'label' => 'Custom ID (#) <span>Set a custom ID & style in VE</span>'
+					),
+					array(
 						'type' => 'text',
 						'name' => 'custom-id',
-						'label' => 'Custom ID (#)',
+						//'label' => '',
 						'default' => null,
 						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
 					),
 					array(
-						'name' => 'center',
-						'label' => 'Center?',
-						'type' => 'checkbox',
-						'tooltip' => 'Center this element horizontally',
-						'default' => false
+						'name' => 'dimensions-heading',
+						'type' => 'heading',
+						'label' => 'Dimensions <span>Width & height mainly for presets</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
 					),
 					array(
 						'type' => 'text',
@@ -166,7 +239,7 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 					array(
 						'type' => 'select',
 						'name' => 'html-element',
-						'label' => 'HTML Element',
+						'label' => 'Markup',
 						'options' => array(
 							'p' => 'Paragraph p',
 							'div' => 'Division div',
@@ -179,6 +252,55 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'label' => 'Custom ID (#)',
 						'default' => null,
 						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'position-type',
+						'label' => 'Position type',
+						'type' => 'select',
+						'default' => 'draggable',
+						'options' => array(
+							'draggable' => 'Draggable',
+							'preset' => 'Preset'
+						),
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'preset-position',
+						'label' => 'Position',
+						'type' => 'select',
+						'tooltip' => 'You can position this element in relation to the block using the positions provided',
+						'default' => 'none',
+						'options' => array(
+							'' => 'None',
+							'top_left' => 'Top Left',
+							'top_center' => 'Top Center',
+							'top_right' => 'Top Right',
+							'center_left' => 'Center Left',
+							'center_center' => 'Center Center',
+							'center_right' => 'Center Right',
+							'bottom_left' => 'Bottom Left',
+							'bottom_center' => 'Bottom Center',
+							'bottom_right' => 'Bottom Right'
+						)
+					),
+					array(
+						'name' => 'center-element',
+						'label' => 'Center on x axis?',
+						'type' => 'checkbox',
+						'default' => false,
+						'callback' => 'centerCallback(block, args)'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
 					),
 					array(
 						'type' => 'text',
@@ -249,7 +371,55 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'default' => null,
 						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
 					),
-
+					array(
+						'name' => 'position-type',
+						'label' => 'Position type',
+						'type' => 'select',
+						'default' => 'draggable',
+						'options' => array(
+							'draggable' => 'Draggable',
+							'preset' => 'Preset'
+						),
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'center-element',
+						'label' => 'Center on x axis?',
+						'type' => 'checkbox',
+						'default' => false,
+						'callback' => 'centerCallback(block, args)'
+					),
+					array(
+						'name' => 'preset-position',
+						'label' => 'Position',
+						'type' => 'select',
+						'tooltip' => 'You can position this element in relation to the block using the positions provided',
+						'default' => 'none',
+						'options' => array(
+							'' => 'None',
+							'top_left' => 'Top Left',
+							'top_center' => 'Top Center',
+							'top_right' => 'Top Right',
+							'center_left' => 'Center Left',
+							'center_center' => 'Center Center',
+							'center_right' => 'Center Right',
+							'bottom_left' => 'Bottom Left',
+							'bottom_center' => 'Bottom Center',
+							'bottom_right' => 'Bottom Right'
+						)
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
+					),
 					array(
 						'type' => 'text',
 						'name' => 'left',
@@ -305,6 +475,55 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'label' => 'Custom ID (#)',
 						'default' => null,
 						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'position-type',
+						'label' => 'Position type',
+						'type' => 'select',
+						'default' => 'draggable',
+						'options' => array(
+							'draggable' => 'Draggable',
+							'preset' => 'Preset'
+						),
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'center-element',
+						'label' => 'Center on x axis?',
+						'type' => 'checkbox',
+						'default' => false,
+						'callback' => 'centerCallback(block, args)'
+					),
+					array(
+						'name' => 'preset-position',
+						'label' => 'Position',
+						'type' => 'select',
+						'tooltip' => 'You can position this element in relation to the block using the positions provided',
+						'default' => 'none',
+						'options' => array(
+							'' => 'None',
+							'top_left' => 'Top Left',
+							'top_center' => 'Top Center',
+							'top_right' => 'Top Right',
+							'center_left' => 'Center Left',
+							'center_center' => 'Center Center',
+							'center_right' => 'Center Right',
+							'bottom_left' => 'Bottom Left',
+							'bottom_center' => 'Bottom Center',
+							'bottom_right' => 'Bottom Right'
+						)
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
 					),
 					array(
 						'name' => 'link-heading',
@@ -398,6 +617,55 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
 					),
 					array(
+						'name' => 'position-type',
+						'label' => 'Position type',
+						'type' => 'select',
+						'default' => 'draggable',
+						'options' => array(
+							'draggable' => 'Draggable',
+							'preset' => 'Preset'
+						),
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'center-element',
+						'label' => 'Center on x axis?',
+						'type' => 'checkbox',
+						'default' => false,
+						'callback' => 'centerCallback(block, args)'
+					),
+					array(
+						'name' => 'preset-position',
+						'label' => 'Position',
+						'type' => 'select',
+						'tooltip' => 'You can position this element in relation to the block using the positions provided',
+						'default' => 'none',
+						'options' => array(
+							'' => 'None',
+							'top_left' => 'Top Left',
+							'top_center' => 'Top Center',
+							'top_right' => 'Top Right',
+							'center_left' => 'Center Left',
+							'center_center' => 'Center Center',
+							'center_right' => 'Center Right',
+							'bottom_left' => 'Bottom Left',
+							'bottom_center' => 'Bottom Center',
+							'bottom_right' => 'Bottom Right'
+						)
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
+					),
+					array(
 						'name' => 'svg-link-heading',
 						'type' => 'heading',
 						'label' => 'Link SVG Image'
@@ -416,7 +684,6 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'type' => 'text',
 						'tooltip' => 'Set title text for the link'
 					),
-
 					array(
 						'name' => 'svg-link-target',
 						'label' => 'New window?',
@@ -492,6 +759,56 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'label' => 'Custom ID (#)',
 						'default' => null,
 						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'position-type',
+						'label' => 'Position type',
+						'type' => 'select',
+						'default' => 'draggable',
+						'options' => array(
+							'draggable' => 'Draggable',
+							'preset' => 'Preset'
+						),
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'center-element',
+						'label' => 'Center on x axis?',
+						'type' => 'checkbox',
+						'default' => false,
+						'callback' => 'centerCallback(block, args)'
+					),
+					array(
+						'name' => 'preset-position',
+						'label' => 'Position',
+						'type' => 'select',
+						'tooltip' => 'You can position this element in relation to the block using the positions provided',
+						'default' => 'none',
+						'options' => array(
+							'' => 'None',
+							'top_left' => 'Top Left',
+							'top_center' => 'Top Center',
+							'top_right' => 'Top Right',
+							'center_left' => 'Center Left',
+							'center_center' => 'Center Center',
+							'center_right' => 'Center Right',
+							'bottom_left' => 'Bottom Left',
+							'bottom_center' => 'Bottom Center',
+							'bottom_right' => 'Bottom Right'
+						),
+						'callback' => 'reloadBlockOptions();refreshBlockContent(block.id);'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
 					),
 					array(
 						'type' => 'text',

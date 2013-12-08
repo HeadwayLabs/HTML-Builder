@@ -23,6 +23,20 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 		'svg'
 	);
 
+	public static $position_properties = array(
+		'top_left' => 'left: 0; top: 0;',
+		'top_center' => 'left: 0; top: 0; right: 0;',
+		'top_right' => 'top: 0; right: 0;',
+
+		'center_center' => 'bottom: 0; left: 0; top: 0; right: 0;',
+		'center_left' => 'bottom: 0; left: 0; top: 0;',
+		'center_right' => 'bottom: 0; top: 0; right: 0;',
+		
+		'bottom_left' => 'bottom: 0; left: 0;',
+		'bottom_center' => 'bottom: 0; left: 0; right: 0;',
+		'bottom_right' => 'bottom: 0;right: 0;'
+	);
+
 	public static function init_action($block_id, $block = false) {
 
 		self::$block_id = $block_id;
@@ -41,7 +55,12 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 		
 		return '
 		(function ($) {
-			
+
+			$(document).ready(function() {
+
+
+			});
+
 		})(jQuery);' . "\n";
 	
 	}
@@ -60,48 +79,93 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 
 				$i++;
 
-				$position = "";
-				$inherit = "";
+				$position_type = headway_get('position-type', $element, false);//drag or preset
 
-				$left = headway_fix_data_type(headway_get('left', $element, false));
-				$right = headway_fix_data_type(headway_get('right', $element, false));
+				$width = headway_fix_data_type(headway_get('width', $element, false)) ? 'width: '.headway_fix_data_type(headway_get('width', $element, false)).'' : null;
+				$height = headway_fix_data_type(headway_get('height', $element, false)) ? 'height: '.headway_fix_data_type(headway_get('height', $element, false)).'' : null;
 
-				if ($left >= 50 && $right <= 50) {
-		        	$position = "right";
-		        	$inherit = "left";
-		        } else if ($left <= 50 && $right >= 50) {
-		        	$position = "left";
-		        	$inherit = "right";
-		        }
-
-		        $position_value = headway_fix_data_type(headway_get($position, $element, false));
-		        $top_position = headway_fix_data_type(headway_get('top', $element, false));
-
-				$css .= '
-				#block-' . $block_id . ' {
-					position: relative;
+				if ($width or $height) {
+					$css .= '
+					#block-' . $block_id . ' .'.$element_type.'-elements.element'. $i .' {
+					    ' . $height . ';
+					    ' . $width . ';
+					}';
 				}
 
-				.ui-draggable { cursor: move; }
+				if($position_type === 'draggable') {
 
-				.'.$element_type.'-elements.element'. $i .' { 
-					' . $inherit . ': inherit;
-					top: '. $top_position .'px;
-					' . $position . ': '. $position_value .'%;
+					$left = headway_fix_data_type(headway_get('left', $element, false));
+					$right = headway_fix_data_type(headway_get('right', $element, false));
+
+					if($left or $right) {
+
+						$position = "";
+						$inherit = "";
+
+						if ($left >= 50 && $right <= 50) {
+			        		$position = "right";
+			        		$inherit = "left";
+				        } else if ($left <= 50 && $right >= 50) {
+				        	$position = "left";
+				        	$inherit = "right";
+				        }
+
+				        $position_value = headway_fix_data_type(headway_get($position, $element, false));
+				        $top_position = headway_fix_data_type(headway_get('top', $element, false));
+
+				        /* If center */
+				        if (headway_fix_data_type(headway_get('center-element', $element, false)) === true) {
+				        	$position = "left";
+				       		$inherit = "right";
+				       		$position_value = headway_fix_data_type(headway_get('left', $element, false));
+				        }
+
+				        $position_metric = '%';
+				        
+
+						$css .= '
+						#block-' . $block_id . ' {
+							position: relative;
+						}
+
+						.'.$element_type.'-elements.element'. $i .' { 
+							' . $inherit . ': inherit;
+							top: '. $top_position .'px;
+							' . $position . ': '. $position_value . $position_metric . ';
+						}
+						
+					' . "\n";
+
+					}
+
+				} else if($position_type === 'preset') {
+
+					$preset_position = headway_fix_data_type(headway_get('preset-position', $element, false));
+
+					if ( !$preset_position)
+						return;
+
+					$css .= '
+					#block-' . $block_id . ' { position: relative; }
+					#block-' . $block_id . ' .'.$element_type.'-elements.element'. $i .' {
+						margin: auto;
+					    ' . headway_get($preset_position, self::$position_properties) . '
+					}
+				';
+
+
 				}
-				
-			' . "\n";
-
 			}
 		
 		}
 
 		$css .= '
-			/* TODO: must move to css file */
-				.element {
-					position: absolute;
-					float: left;
-				}';
+			.ui-draggable { cursor: move; }
+			.element {
+				position: absolute;
+				float: left;
+			}';
+
 
 		return $css;
 		
@@ -237,7 +301,7 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 		$heading_element = headway_fix_data_type(headway_get('heading-html-element', $element));
 		$custom_id = headway_fix_data_type(headway_get('custom-id', $element)) ? 'id="'. headway_fix_data_type(headway_get('custom-id', $element)) .'"' : null;
 
-		echo '<' . $heading_element . ' ' . $custom_id . ' class="' . $element_type . '-elements element element' . $i . ' " data-element-type="heading-elements">';
+		echo '<' . $heading_element . ' ' . $custom_id . ' class="' . $element_type . '-elements element element' . $i . ' autopos" data-element-type="heading-elements">';
 
 			echo headway_fix_data_type(headway_get($element_type, $element, false));
 
