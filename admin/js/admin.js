@@ -22,11 +22,7 @@ var draggableCallback = function(block, args) {
 
 			  	containment: $i('#block-'+blockID),
 
-			  	grid: [10,10],
-
-			  	snap: true,
-
-			  	start: function() {
+			  	start: function(event, el) {
 
 			  		elementGroup = $(element).data('element-type');
 
@@ -38,7 +34,43 @@ var draggableCallback = function(block, args) {
 
 			  	},
 
+			  	drag: function(event, el) {
+
+			  		/* Display center guides during drag */
+			  		var blockWidth = element.parents('div#block-' + blockID + '.block').width();
+					var elWidth = $(element).width();
+					var xCenterPoint = (blockWidth / 2) - (elWidth / 2);
+
+					var blockHeight = element.parents('div#block-' + blockID + '.block').height();
+					var elHeight = $(element).height();
+					var yCenterPoint = (blockHeight / 2) - (elHeight / 2);
+
+					/* Shouw outline when close to edges */
+					if (el.position['top'] <= 1 || el.position['left'] <= 1 || el.position['top'] >= blockHeight - elHeight - 1  || el.position['left'] >= blockWidth - elWidth - 1) {
+						$(element).parents('.block').css('border', '1px dotted #D0011B')
+					} else {
+						$(element).parents('.block').css('border', 'none')
+					}
+
+					/* Show center guides */
+					if (el.position['top'] >= yCenterPoint && el.position['top'] <= yCenterPoint + 2 && el.position['left'] >= xCenterPoint && el.position['left'] <= xCenterPoint + 2) {
+						$(element).parents('.block').removeClass('x-line y-line x-y-line');
+						$(element).parents('.block').addClass('x-y-line');
+					} else if (el.position['left'] >= xCenterPoint && el.position['left'] <= xCenterPoint + 2) {
+						$(element).parents('.block').removeClass('x-line y-line x-y-line');
+						$(element).parents('.block').addClass('y-line');
+					} else if (el.position['top'] >= yCenterPoint && el.position['top'] <= yCenterPoint + 2) {
+						$(element).parents('.block').removeClass('x-line y-line x-y-line');
+						$(element).parents('.block').addClass('x-line');
+					} else {
+						$(element).parents('.block').removeClass('x-line y-line x-y-line');
+					}
+
+			  	},
+
 			  	stop: function(event, el) {
+
+			  		$(element).parents('.block').removeClass('x-line y-line x-y-line');
 			  
 			  		//console.log(args)
 			  		//console.log(args.input)
@@ -69,27 +101,17 @@ var draggableCallback = function(block, args) {
 					element.css('width', elWidth);
 
 					leftPos = el.position['left'];
-					leftPosPercentage = (leftPos / (blockWidth - elWidth)) * 100;
 
 					rightPos = (blockWidth - leftPos) - elWidth;
-					rightPosPercentage = (rightPos / (blockWidth - elWidth)) * 100;
-
-					if (leftPosPercentage >= 50 && rightPosPercentage <= 50) {
-			        	element.css('right', rightPosPercentage+'%');
-						element.css('left', 'inherit');
-			        } else if (leftPosPercentage <= 50 && rightPosPercentage >= 50) {
-			        	element.css('left', leftPosPercentage+'%');
-						element.css('right', 'inherit');
-			        }
 
 			  		var positions = ['left', 'top', 'right'];
 
 			  		$.each(positions, function(i, position) {
 
 						if(position == 'right') {
-							var newPosition = rightPosPercentage;
+							var newPosition = rightPos;
 						} else if(position == "left") {
-							var newPosition = leftPosPercentage;
+							var newPosition = leftPos;
 						} else {
 							var newPosition = el.position[position];
 						}
@@ -131,78 +153,9 @@ var draggableCallback = function(block, args) {
 			//gets each groups options and then applies draggable to them
 			$.each(elementGroups, function(index, settings) {
 
-
-				if (settings['position-type'] == 'draggable') {
+				if (settings['disable-draggable'] == "false" || settings['disable-draggable'] == false) {
 					var element = $i('.' + elementType + '.element' + index);
 					envokeDraggable(index, element, elementGroups)
-				};
-				
-			
-			});
-
-		});
-
-	}, 1000);
-
-}
-
-var centerCallback = function(block, args) {                
-
-	setTimeout(function(){
-
-		var blockID = block.id;
-		
-		var centerElement = function(index, element, elementGroups) {
-
-			var elWidth = element.width();
-
-			var elWidth = $(element).width();
-					
-			var blockWidth = element.parents('.block').width();
-
-			var elementGroup = $(element).data('element-type');
-
-			var position = "left";
-
-			var newPosition = (blockWidth / 2) - (elWidth / 2);// finds the center
-
-			var newPosPercentage = (newPosition / (blockWidth)) * 100;
-
-			elementGroups[index][position] = newPosPercentage;
-						
-			var thisInput = args.input.parents('.sub-tabs-content-container').find('#sub-tab-' + elementGroup + '-tab-content .repeater-group').eq(index).find('#input-' + blockID + '-' +position);
-
-			thisInput.val(newPosPercentage);
-
-			setTimeout(function(){
-
-				dataHandleInput(thisInput, newPosPercentage);
-				
- 			}, 600);
-
- 			setTimeout(function(){
-
-				save(); 
-				
- 			}, 900);
-			
-
-		}
-
-
-		/*
-			Go through each element and each group and envoke draggable
-		*/
-		$.each(block.settings, function(elementType, elementGroups) {
-
-			//console.log(elementGroups)//repeater groups each as object, eg: text, images
-
-			//gets each groups options and then applies draggable to them
-			$.each(elementGroups, function(index, settings) {
-
-				if (settings['position-type'] == 'draggable') {
-					var element = $i('.' + elementType + '.element' + index);
-					centerElement(index, element, elementGroups)
 				};
 				
 			

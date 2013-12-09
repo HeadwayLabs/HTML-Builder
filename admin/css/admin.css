@@ -4,10 +4,11 @@ div.sub-tabs-content .repeater .repeater-group {
 }
 
 div.sub-tabs-content .repeater .repeater-group div.input-heading h3 {
+	font-size: 13px;
 	float: left;
-	width: 148px;
+	width: 160px;
 	border-right: 3px solid #5F5F5F;
-	margin: 8px 11px 15px 0;
+	margin: 8px 11px 15px 10px;
 	padding: 3px;
 	border-bottom: none;
 	text-transform: capitalize;
@@ -25,3 +26,5 @@ div.sub-tabs-content .repeater .repeater-group div.input-heading h3 span {
 	display: block;
 	margin: 9px 0 0;
 }
+
+
