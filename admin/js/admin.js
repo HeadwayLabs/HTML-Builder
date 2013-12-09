@@ -15,6 +15,38 @@ var draggableCallback = function(block, args) {
 			element.css('width', elWidth);
 
 		}
+
+		setupGuides = function (element, el) {
+  			/* Display center guides during drag */
+	  		var blockWidth = element.parents('div#block-' + blockID + '.block').width();
+			var elWidth = $(element).width();
+			var xCenterPoint = (blockWidth / 2) - (elWidth / 2);
+
+			var blockHeight = element.parents('div#block-' + blockID + '.block').height();
+			var elHeight = $(element).height();
+			var yCenterPoint = (blockHeight / 2) - (elHeight / 2);
+
+			/* Shouw outline when close to edges */
+			if (el.position['top'] <= 1 || el.position['left'] <= 1 || el.position['top'] >= blockHeight - elHeight - 1  || el.position['left'] >= blockWidth - elWidth - 1) {
+				$(element).parents('.block').css('border', '1px dotted #D0011B')
+			} else {
+				$(element).parents('.block').css('border', 'none')
+			}
+
+			/* Show center guides */
+			if (el.position['top'] >= yCenterPoint && el.position['top'] <= yCenterPoint + 2 && el.position['left'] >= xCenterPoint && el.position['left'] <= xCenterPoint + 2) {
+				$(element).parents('.block').removeClass('x-line y-line x-y-line');
+				$(element).parents('.block').addClass('x-y-line');
+			} else if (el.position['left'] >= xCenterPoint && el.position['left'] <= xCenterPoint + 2) {
+				$(element).parents('.block').removeClass('x-line y-line x-y-line');
+				$(element).parents('.block').addClass('y-line');
+			} else if (el.position['top'] >= yCenterPoint && el.position['top'] <= yCenterPoint + 2) {
+				$(element).parents('.block').removeClass('x-line y-line x-y-line');
+				$(element).parents('.block').addClass('x-line');
+			} else {
+				$(element).parents('.block').removeClass('x-line y-line x-y-line');
+			}
+  		}
 		
 		var envokeDraggable = function(index, element, elementGroups) {
 
@@ -36,35 +68,7 @@ var draggableCallback = function(block, args) {
 
 			  	drag: function(event, el) {
 
-			  		/* Display center guides during drag */
-			  		var blockWidth = element.parents('div#block-' + blockID + '.block').width();
-					var elWidth = $(element).width();
-					var xCenterPoint = (blockWidth / 2) - (elWidth / 2);
-
-					var blockHeight = element.parents('div#block-' + blockID + '.block').height();
-					var elHeight = $(element).height();
-					var yCenterPoint = (blockHeight / 2) - (elHeight / 2);
-
-					/* Shouw outline when close to edges */
-					if (el.position['top'] <= 1 || el.position['left'] <= 1 || el.position['top'] >= blockHeight - elHeight - 1  || el.position['left'] >= blockWidth - elWidth - 1) {
-						$(element).parents('.block').css('border', '1px dotted #D0011B')
-					} else {
-						$(element).parents('.block').css('border', 'none')
-					}
-
-					/* Show center guides */
-					if (el.position['top'] >= yCenterPoint && el.position['top'] <= yCenterPoint + 2 && el.position['left'] >= xCenterPoint && el.position['left'] <= xCenterPoint + 2) {
-						$(element).parents('.block').removeClass('x-line y-line x-y-line');
-						$(element).parents('.block').addClass('x-y-line');
-					} else if (el.position['left'] >= xCenterPoint && el.position['left'] <= xCenterPoint + 2) {
-						$(element).parents('.block').removeClass('x-line y-line x-y-line');
-						$(element).parents('.block').addClass('y-line');
-					} else if (el.position['top'] >= yCenterPoint && el.position['top'] <= yCenterPoint + 2) {
-						$(element).parents('.block').removeClass('x-line y-line x-y-line');
-						$(element).parents('.block').addClass('x-line');
-					} else {
-						$(element).parents('.block').removeClass('x-line y-line x-y-line');
-					}
+			  		setupGuides(element, el);
 
 			  	},
 
