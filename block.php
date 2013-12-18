@@ -20,7 +20,12 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 		'image',
 		'link',
 		'button',
-		'svg'
+		'svg',
+		'blockquote',
+		'address',
+		'video',
+		'audio',
+		'list'
 	);
 
 	public static $position_properties = array(
@@ -45,24 +50,8 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 
 	public static function enqueue_action($block_id, $block) {
 
-		wp_enqueue_script('html-builder', headway_url() . '/library/media/js/jquery.ui.js', array('jquery'));
+		wp_enqueue_script('html-builder', plugins_url(false, __FILE__) . '/js/player.js', array('jquery'));
 
-	}
-
-	public static function dynamic_js($block_id, $block) {
-
-		$block_width = HeadwayBlocksData::get_block_width($block);
-		
-		return '
-		(function ($) {
-
-			$(document).ready(function() {
-
-
-			});
-
-		})(jQuery);' . "\n";
-	
 	}
 
 	public static function dynamic_css($block_id, $block) {
@@ -79,8 +68,7 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 
 				$i++;
 
-				$disable_draggable = headway_get('disable-draggable', $element, false);
-
+				$enable_draggable = headway_fix_data_type(headway_get('enable-draggable', $element, false));
 				$width = headway_fix_data_type(headway_get('width', $element, false)) ? 'width: '.headway_fix_data_type(headway_get('width', $element, false)).'' : null;
 				$height = headway_fix_data_type(headway_get('height', $element, false)) ? 'height: '.headway_fix_data_type(headway_get('height', $element, false)).'' : null;
 
@@ -92,7 +80,7 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 					}';
 				}
 
-				if($disable_draggable !== true) {
+				if($enable_draggable) {
 
 					$left = headway_fix_data_type(headway_get('left', $element, false));
 					$right = headway_fix_data_type(headway_get('right', $element, false));
@@ -134,12 +122,24 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 
 					}
 
+				} else {
+					$css .= '
+						#block-' . $block_id . ' .'.$element_type.'-elements.element'. $i .' {
+							position: static;
+						}
+					';
 				}
 			}
 		
 		}
 
 		$css .= '
+
+			.element {
+				position: absolute;
+				float: left;
+			}
+
 			.y-line {
 				background: url(' . plugins_url(false, __FILE__) . '/admin/images/y-line.png) repeat-y 50% 0;
 			}
@@ -152,10 +152,7 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 				background: url(' . plugins_url(false, __FILE__) . '/admin/images/y-line.png) repeat-y 50% 0, url(' . plugins_url(false, __FILE__) . '/admin/images/x-line.png) repeat-x 0 50%;
 			}
 			.ui-draggable { cursor: move; }
-			.element {
-				position: absolute;
-				float: left;
-			}';
+			';
 
 
 		return $css;
@@ -193,7 +190,16 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 
 			}
 
-			echo self::display_elements($elements, $element_type);
+			if ($element_type == 'list') {
+
+				$list_elements = parent::get_setting($block, $element_type . '-elements' , array());
+				echo self::display_list_elements($list_elements, $element_type);
+
+			} else {
+
+				echo self::display_elements($elements, $element_type);
+
+			}
 		
 		}
 	  		
@@ -275,6 +281,22 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 	  			case 'svg':
 	  				self::svg_element_output($element, $element_type, $i);
 	  				break;
+
+	  			case 'blockquote':
+	  				self::blockquote_element_output($element, $element_type, $i);
+	  				break;
+
+	  			case 'address':
+	  				self::address_element_output($element, $element_type, $i);
+	  				break;
+
+	  			case 'video':
+	  				self::video_element_output($element, $element_type, $i);
+	  				break;
+
+	  			case 'audio':
+	  				self::audio_element_output($element, $element_type, $i);
+	  				break;
 	  			
 	  			default:
 	  				return;
@@ -287,12 +309,41 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 
 	}
 
+	function display_list_elements($elements, $element_type, $block) {
+
+		$block_id = self::$block_id;
+		$block = HeadwayBlocksData::get_block($block_id);
+
+		$custom_id = parent::get_setting($block, 'custom-list-id', null);
+
+		$custom_id = $custom_id ? 'id="'. $custom_id .'"' : null;
+			
+
+  		echo '<ul ' . $custom_id . ' class="' . $element_type . '-elements element element0" data-element-type="list-elements">';
+	  	foreach ( $elements as $element ) {
+
+	  		//move to UL $custom_id = headway_fix_data_type(headway_get('custom-id', $element)) ? 'id="'. headway_fix_data_type(headway_get('custom-id', $element)) .'"' : null;
+
+
+			echo '<li>';
+
+				echo headway_fix_data_type(headway_get($element_type, $element, false));
+
+			echo '</li>';
+	  		
+	  	}
+
+	  	echo '</ul>';
+		
+	}
+
+
 	function heading_element_output($element, $element_type, $i) {
 
 		$heading_element = headway_fix_data_type(headway_get('heading-html-element', $element));
 		$custom_id = headway_fix_data_type(headway_get('custom-id', $element)) ? 'id="'. headway_fix_data_type(headway_get('custom-id', $element)) .'"' : null;
 
-		echo '<' . $heading_element . ' ' . $custom_id . ' class="' . $element_type . '-elements element element' . $i . ' autopos" data-element-type="heading-elements">';
+		echo '<' . $heading_element . ' ' . $custom_id . ' class="' . $element_type . '-elements element element' . $i . '" data-element-type="heading-elements">';
 
 			echo headway_fix_data_type(headway_get($element_type, $element, false));
 
@@ -379,6 +430,117 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
 
 	}
 
+	function blockquote_element_output($element, $element_type, $i) {
+			
+		$output = array(
+
+			'blockquote' => array(
+  				'blockquote' => headway_fix_data_type(headway_get('blockquote', $element, false)),
+  				'custom-id' => headway_fix_data_type(headway_get('custom-id', $element, false)) ? ' id="' . headway_fix_data_type(headway_get('custom-id', $element, false)) . '"' : null,
+  			),
+
+  			'cite' => array(
+  				'href' => headway_fix_data_type(headway_get('author-url', $element)),
+  				'show-cite' => headway_fix_data_type(headway_get('show-cite', $element), false),
+  				'before-author' => headway_fix_data_type(headway_get('before-author', $element, '')),
+  				'author' => headway_fix_data_type(headway_get('author-name', $element, false)),
+  				'target' => headway_fix_data_type(headway_get('target', $element, false)) ? ' target="_blank"' : null
+  			)
+  		);
+
+  		echo '
+  			<blockquote ' . $output['blockquote']['custom-id'] . ' class="'. $element_type . '-elements element element' . $i . '" data-element-type="blockquote-elements">';
+  			
+  			echo $output['blockquote']['blockquote'];
+
+  			if ( $output['cite']['show-cite'] == false )
+  				return;
+			echo '<footer>';
+
+					if ( $output['cite']['before-author'] )
+						echo $output['cite']['before-author'];
+
+					echo '<cite>';
+						if ( $output['cite']['href'] )
+						echo '<a href="' . $output['cite']['href'] . '" ' . $output['hyperlink']['target'] . '>';
+							
+							echo $output['cite']['author'];
+
+						if ( $output['cite']['href'] )
+						echo '</a>';
+
+					if ( $output['cite']['author'] )		
+					echo '
+					</cite>
+
+				</footer>';
+		
+		echo '</blockquote>';
+
+	}
+
+	function address_element_output($element, $element_type, $i) {
+			
+		$output = array(
+
+			'address' => array(
+  				'fn' => headway_fix_data_type(headway_get('address', $element, null)),
+  				'street' => headway_fix_data_type(headway_get('street', $element, null)),
+  				'complex' => headway_fix_data_type(headway_get('complex', $element, null)),
+  				'locality' => headway_fix_data_type(headway_get('locality', $element, null)),
+  				'postal-code' => headway_fix_data_type(headway_get('postal-code', $element, null)),
+  				'tel' => headway_fix_data_type(headway_get('tel', $element, null)),
+  				'country' => headway_fix_data_type(headway_get('country', $element, null)),
+  				'url' => headway_fix_data_type(headway_get('url', $element, null)),
+  				'href' => headway_fix_data_type(headway_get('url', $element, null)),
+  				'custom-id' => headway_fix_data_type(headway_get('custom-id', $element,false)) ? ' id="' . headway_fix_data_type(headway_get('custom-id', $element, false)) . '"' : null,
+  			)
+  		);
+
+  		echo '<div ' . $output['address']['custom-id'] . ' class="vcard '. $element_type . '-elements element element' . $i . '" data-element-type="address-elements">';
+			
+			if($output['address']['fn'])
+				echo '<p class="fn org">' . $output['address']['fn'] . '</p>';
+
+		echo 
+			'<ul class="adr">';
+
+				$complex = $output['address']['complex'];
+				if($complex)
+					echo '<li class="complex">' . $complex .' </li>';
+
+				$street = $output['address']['street'];
+				if($street)
+					echo '<li class="street-address">' . $street .' </li>';
+
+				$locality = $output['address']['locality'];
+				if($locality)
+					echo '<li class="locality">' . $locality .' </li>';
+
+				$post_code = $output['address']['postal-code'];
+				if($post_code)
+					echo '<li class="postal-code">' . $post_code .' </li>';
+
+				$country = $output['address']['country'];
+				if($country)
+					echo '<li class="country-name">' . $country .' </li>';
+
+		echo 	
+			'</ul>';
+
+				$tel = $output['address']['tel'];
+				if($tel)
+					echo '<p class="tel">' . $tel .' </p>';
+
+				$url = $output['address']['url'];
+				if($url)
+					echo '<p class="url"><a href="' . $url .'">' . $url .'</a></p>';
+
+
+  		echo 	'</div>';
+
+	}
+
 	function svg_element_output($element, $element_type, $i) {
 			
 		$output = array(
@@ -412,5 +574,65 @@ class HeadwayHTMLBuilderBlock extends HeadwayBlockAPI {
   		echo '</div>';
 
 	}
-	
+
+	function video_element_output($element, $element_type, $i) {
+
+		/* TODO: use for docs - http://blog.zencoder.com/2013/09/13/what-formats-do-i-need-for-html5-video/ */
+			
+		$output = array(
+  			'video' => array(
+  				'mp4' => headway_fix_data_type(headway_get('video', $element, false)),
+  				'webm' => headway_fix_data_type(headway_get('webm', $element, false)),
+  				'poster' => headway_fix_data_type(headway_get('poster', $element, false)) ? ' poster="' . headway_fix_data_type(headway_get('poster', $element, false)) . '"' : null,
+  				'width' => (headway_fix_data_type(headway_get('width', $element, false))) ? 'width="' . headway_fix_data_type(headway_get('width', $element, false)) . '"' : null,
+  				'height' => (headway_fix_data_type(headway_get('height', $element, false))) ? 'height="' . headway_fix_data_type(headway_get('height', $element, false)) . '"' : null,
+  				'custom-id' => headway_fix_data_type(headway_get('custom-id', $element, false)) ? ' id="' . headway_fix_data_type(headway_get('custom-id', $element, false)) . '"' : null,
+  			)
+  		);
+
+
+		echo '<video ' . $output['video']['custom-id'] . '
+				  ' . $output['video']['width'] . '
+				  ' . $output['video']['height'] . '
+				  ' . $output['video']['poster'] . '
+				  class="'. $element_type . '-elements element element' . $i . '" 
+				  data-element-type="video-elements" 
+				  controls>';
+
+				if ($output['video']['mp4'])
+					echo '<source src="' . $output['video']['mp4'] . '" type=\'video/mp4; codecs="avc1.42E01E, mp4a.40.2"\'>';
+
+				if ($output['video']['webm'])
+					echo '<source src="' . $output['video']['webm'] . '" type=\'video/webm; codecs="vp8, vorbis"\'>';
+
+		echo 'Video tag not supported by your browser. Download this video <a href=" ' . $output['video']['mp4'] . ' ">here</a>.
+				
+			</video>
+		';
+
+	}
+
+	function audio_element_output($element, $element_type, $i) {
+			
+		$output = array(
+  			'audio' => array(
+  				'src' => $element['audio'],
+  				'width' => (headway_fix_data_type(headway_get('width', $element, false))) ? 'width="' . headway_fix_data_type(headway_get('width', $element, false)) . '"' : null,
+  				'height' => (headway_fix_data_type(headway_get('height', $element, false))) ? 'height="' . headway_fix_data_type(headway_get('height', $element, false)) . '"' : null,
+  				'custom-id' => headway_fix_data_type(headway_get('custom-id', $element, false)) ? ' id="' . headway_fix_data_type(headway_get('custom-id', $element, false)) . '"' : null,
+  			)
+  		);
+
+		echo '
+			<audio src=' . $output['audio']['src'] . '
+			  ' . $output['audio']['width'] . '
+			  ' . $output['audio']['height'] . '
+			  class="'. $element_type . '-elements element element' . $i . '" 
+			  data-element-type="audio-elements" 
+			  controls>
+			  <p>fallback text</p>
+			</video>
+		';
+
+	}
 }

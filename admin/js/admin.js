@@ -157,7 +157,7 @@ var draggableCallback = function(block, args) {
 			//gets each groups options and then applies draggable to them
 			$.each(elementGroups, function(index, settings) {
 
-				if (settings['disable-draggable'] == "false" || settings['disable-draggable'] == false) {
+				if (settings['enable-draggable'] == "true") {
 					var element = $i('.' + elementType + '.element' + index);
 					envokeDraggable(index, element, elementGroups)
 				};

@@ -1,9 +1,9 @@
-div.sub-tabs-content .repeater .repeater-group {
+.panel-block-type-html-builder div.sub-tabs-content .repeater .repeater-group {
 	width: 92%;
 
 }
 
-div.sub-tabs-content .repeater .repeater-group div.input-heading h3 {
+.panel-block-type-html-builder div.sub-tabs-content .repeater .repeater-group div.input-heading h3 {
 	font-size: 13px;
 	float: left;
 	width: 160px;
@@ -19,7 +19,7 @@ div.sub-tabs-content .repeater .repeater-group div.input-heading h3 {
 	box-shadow: none;
 }
 
-div.sub-tabs-content .repeater .repeater-group div.input-heading h3 span {
+.panel-block-type-html-builder div.sub-tabs-content .repeater .repeater-group div.input-heading h3 span {
 	font-size: 9px;
 	font-weight: normal;
 	color: #777;
@@ -27,4 +27,27 @@ div.sub-tabs-content .repeater .repeater-group div.input-heading h3 span {
 	margin: 9px 0 0;
 }
 
+.panel-block-type-html-builder div.sub-tab-notice {
+	background: none;
+	font-size: 12px;
+	color: #bbb;
+	border: none;
+}
+
+.panel-block-type-html-builder div.sub-tab-notice h1 {
+	font-size: 16px;
+	color: #eee;
+}
+
+.panel-block-type-html-builder div.sub-tab-notice h1 span {
+	font-size: 12px;
+	color: #777;
+}
+
+video {
+	width: 75px;
+	-webkit-transition: all 0.5s ease-in-out;
+}
+ 
+video:hover,video:focus { width:600px; }
 
