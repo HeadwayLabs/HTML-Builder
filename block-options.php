@@ -84,7 +84,7 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 		'audio-elements-tab' => 'Audio Elements',
 		'address-elements-tab' => 'Address Elements',
 		'svg-elements-tab' => 'SVG Elements',
-		'list-elements-tab' => 'List Elements'
+		'list-elements-tab' => 'List Element'
 	);
 
 	public $inputs = array(
@@ -194,12 +194,16 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 				'label' => 'Text Elements',
 				'inputs' => array(
 					array(
+						'name' => 'text-heading',
+						'type' => 'heading',
+						'label' => 'Text & Markup <span>Set text and the html markup</span>'
+					),
+					array(
 						'type' => 'textarea',
 						'name' => 'text',
 						'label' => 'Text',
 						'default' => null
 					),
-
 					array(
 						'type' => 'select',
 						'name' => 'html-element',
@@ -211,11 +215,9 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						)
 					),
 					array(
-						'type' => 'text',
-						'name' => 'custom-id',
-						'label' => 'Custom ID (#)',
-						'default' => null,
-						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+						'name' => 'position-id-heading',
+						'type' => 'heading',
+						'label' => 'Positioning <span>Position with drag or default</span>'
 					),
 					array(
 						'name' => 'enable-draggable',
@@ -223,6 +225,23 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'type' => 'checkbox',
 						'default' => true,
 						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'custom-id-heading',
+						'type' => 'heading',
+						'label' => 'Custom ID (#) <span>Set a custom ID & style in VE</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'custom-id',
+						//'label' => '',
+						'default' => null,
+						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'dimensions-heading',
+						'type' => 'heading',
+						'label' => 'Dimensions <span>Width & Height of element</span>'
 					),
 					array(
 						'type' => 'text',
@@ -270,6 +289,11 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 				'label' => 'Link Elements',
 				'inputs' => array(
 					array(
+						'name' => 'link-heading',
+						'type' => 'heading',
+						'label' => 'Add Link <span>Set link text, url and title.</span>'
+					),
+					array(
 						'name' => 'link',
 						'label' => 'Link Text',
 						'type' => 'text',
@@ -297,12 +321,10 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'tooltip' => 'Open the link in a new window?',
 						'default' => false,
 					),
-					array(
-						'type' => 'text',
-						'name' => 'custom-id',
-						'label' => 'Custom ID (#)',
-						'default' => null,
-						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+										array(
+						'name' => 'position-id-heading',
+						'type' => 'heading',
+						'label' => 'Positioning <span>Position with drag or default</span>'
 					),
 					array(
 						'name' => 'enable-draggable',
@@ -310,6 +332,23 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'type' => 'checkbox',
 						'default' => true,
 						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'custom-id-heading',
+						'type' => 'heading',
+						'label' => 'Custom ID (#) <span>Set a custom ID & style in VE</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'custom-id',
+						//'label' => '',
+						'default' => null,
+						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'dimensions-heading',
+						'type' => 'heading',
+						'label' => 'Dimensions <span>Width & Height of element</span>'
 					),
 					array(
 						'type' => 'text',
@@ -327,8 +366,7 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'type' => 'text',
 						'name' => 'left',
 						'label' => 'Left',
-						'default' => null,
-						'callback' => ''
+						'default' => null
 					),
 					array(
 						'type' => 'text',
@@ -359,6 +397,11 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 				'label' => 'Images',
 				'inputs' => array(
 					array(
+						'name' => 'image-heading',
+						'type' => 'heading',
+						'label' => 'Image Details <span>Upload Image and set alt text</span>'
+					),
+					array(
 						'type' => 'image',
 						'name' => 'image',
 						'label' => 'Image',
@@ -372,35 +415,9 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'tooltip' => 'This will be used as the "alt" attribute for the image.  The alt attribute is <em>hugely</em> beneficial for SEO (Search Engine Optimization) and for general accessibility.'
 					),
 					array(
-						'type' => 'text',
-						'name' => 'custom-id',
-						'label' => 'Custom ID (#)',
-						'default' => null,
-						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
-					),
-					array(
-						'name' => 'enable-draggable',
-						'label' => 'Enable draggable',
-						'type' => 'checkbox',
-						'default' => true,
-						'callback' => 'reloadBlockOptions()'
-					),
-					array(
-						'type' => 'text',
-						'name' => 'width',
-						'label' => 'Width',
-						'default' => null
-					),
-					array(
-						'type' => 'text',
-						'name' => 'height',
-						'label' => 'Height',
-						'default' => null
-					),
-					array(
 						'name' => 'link-heading',
 						'type' => 'heading',
-						'label' => 'Link Image'
+						'label' => 'Link image <span>Set details to link this image</span>'
 					),
 
 					array(
@@ -424,12 +441,51 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'tooltip' => 'If you would like to open the link in a new window check this option',
 						'default' => false,
 					),
+										array(
+						'name' => 'position-id-heading',
+						'type' => 'heading',
+						'label' => 'Positioning <span>Position with drag or default</span>'
+					),
+					array(
+						'name' => 'enable-draggable',
+						'label' => 'Enable draggable',
+						'type' => 'checkbox',
+						'default' => true,
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'custom-id-heading',
+						'type' => 'heading',
+						'label' => 'Custom ID (#) <span>Set a custom ID & style in VE</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'custom-id',
+						'default' => null,
+						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'dimensions-heading',
+						'type' => 'heading',
+						'label' => 'Dimensions <span>Width & Height of element</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
+					),
 					array(
 						'type' => 'text',
 						'name' => 'left',
 						'label' => 'Left',
-						'default' => null,
-						'callback' => ''
+						'default' => null
 					),
 					array(
 						'type' => 'text',
@@ -460,6 +516,12 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 				'name' => 'svg-elements',
 				'label' => 'SVG Images',
 				'inputs' => array(
+
+					array(
+						'name' => 'svg-heading',
+						'type' => 'heading',
+						'label' => 'Upload SVG <span>Upload a .svg file</span>'
+					),
 					array(
 						'type' => 'image',
 						'name' => 'svg',
@@ -473,42 +535,10 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'label' => '"alt"',
 						'tooltip' => 'This will be used as the "alt" attribute for the image.  The alt attribute is <em>hugely</em> beneficial for SEO (Search Engine Optimization) and for general accessibility.'
 					),
-
-					array(
-						'type' => 'text',
-						'name' => 'svg-width',
-						'label' => 'Width'
-					),
-					array(
-						'type' => 'text',
-						'name' => 'custom-id',
-						'label' => 'Custom ID (#)',
-						'default' => null,
-						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
-					),
-					array(
-						'name' => 'enable-draggable',
-						'label' => 'Enable draggable',
-						'type' => 'checkbox',
-						'default' => true,
-						'callback' => 'reloadBlockOptions()'
-					),
-					array(
-						'type' => 'text',
-						'name' => 'width',
-						'label' => 'Width',
-						'default' => null
-					),
-					array(
-						'type' => 'text',
-						'name' => 'height',
-						'label' => 'Height',
-						'default' => null
-					),
 					array(
 						'name' => 'svg-link-heading',
 						'type' => 'heading',
-						'label' => 'Link SVG Image'
+						'label' => 'Link SVG Image <span>Set details to link SVG</span>'
 					),
 
 					array(
@@ -531,12 +561,52 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'tooltip' => 'If you would like to open the link in a new window check this option',
 						'default' => false,
 					),
+										array(
+						'name' => 'position-id-heading',
+						'type' => 'heading',
+						'label' => 'Positioning <span>Position with drag or default</span>'
+					),
+					array(
+						'name' => 'enable-draggable',
+						'label' => 'Enable draggable',
+						'type' => 'checkbox',
+						'default' => true,
+						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'custom-id-heading',
+						'type' => 'heading',
+						'label' => 'Custom ID (#) <span>Set a custom ID & style in VE</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'custom-id',
+						//'label' => '',
+						'default' => null,
+						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'dimensions-heading',
+						'type' => 'heading',
+						'label' => 'Dimensions <span>Width & Height of element</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'width',
+						'label' => 'Width',
+						'default' => null
+					),
+					array(
+						'type' => 'text',
+						'name' => 'height',
+						'label' => 'Height',
+						'default' => null
+					),
 					array(
 						'type' => 'text',
 						'name' => 'left',
 						'label' => 'Left',
-						'default' => null,
-						'callback' => ''
+						'default' => null
 					),
 					array(
 						'type' => 'text',
@@ -567,6 +637,11 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 				'label' => 'Button Elements',
 				'inputs' => array(
 					array(
+						'name' => 'button-heading',
+						'type' => 'heading',
+						'label' => 'Text & Link <span>Set button text and the link</span>'
+					),
+					array(
 						'name' => 'button',
 						'label' => 'Button Text',
 						'type' => 'text',
@@ -593,11 +668,9 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'default' => false,
 					),
 					array(
-						'type' => 'text',
-						'name' => 'custom-id',
-						'label' => 'Custom ID (#)',
-						'default' => null,
-						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+						'name' => 'position-id-heading',
+						'type' => 'heading',
+						'label' => 'Positioning <span>Position with drag or default</span>'
 					),
 					array(
 						'name' => 'enable-draggable',
@@ -605,6 +678,23 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'type' => 'checkbox',
 						'default' => true,
 						'callback' => 'reloadBlockOptions()'
+					),
+					array(
+						'name' => 'custom-id-heading',
+						'type' => 'heading',
+						'label' => 'Custom ID (#) <span>Set a custom ID & style in VE</span>'
+					),
+					array(
+						'type' => 'text',
+						'name' => 'custom-id',
+						//'label' => '',
+						'default' => null,
+						'tooltip' => 'Set a custom ID so you can style this element differently from all others like it. This will also register this element in the design panel and element tree.'
+					),
+					array(
+						'name' => 'dimensions-heading',
+						'type' => 'heading',
+						'label' => 'Dimensions <span>Width & Height of element</span>'
 					),
 					array(
 						'type' => 'text',
@@ -622,8 +712,7 @@ class HeadwayHTMLBuilderBlockOptions extends HeadwayBlockOptionsAPI {
 						'type' => 'text',
 						'name' => 'left',
 						'label' => 'Left',
-						'default' => null,
-						'callback' => ''
+						'default' => null
 					),
 					array(
 						'type' => 'text',
